@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
+@Table(name = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,20 +20,33 @@ public class Account {
     @Column(unique = true, nullable = false)
     private String accountNumber;
 
+    @Column(nullable = false)
     private String accountType;
+
+    @Column(nullable = false)
     private String currency;
+
+    @Column(nullable = false)
     private String status;
-    private BigDecimal availableBalance;
-    private BigDecimal ledgerBalance;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal availableBalance = BigDecimal.ZERO;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal ledgerBalance = BigDecimal.ZERO;
+
+    @Column(precision = 19, scale = 2)
     private BigDecimal minimumBalance;
+
+    @Column(precision = 19, scale = 2)
     private BigDecimal dailyWithdrawalLimit;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Card> cards;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
 }
