@@ -12,7 +12,7 @@ import lombok.*;
 public class ATM {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
