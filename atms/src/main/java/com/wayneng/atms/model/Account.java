@@ -47,11 +47,11 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Card> cards;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
+@Table(name = "customers")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,14 +16,19 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+    @Column(nullable = false)
+    private String fullName;
 
-    @OneToMany(mappedBy = "customer")
+    @Column(nullable = false)
+    private String status;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Account> accounts;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Card> cards;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
 }

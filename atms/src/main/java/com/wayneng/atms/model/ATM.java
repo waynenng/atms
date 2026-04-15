@@ -41,7 +41,7 @@ public class ATM {
     @OneToMany(mappedBy = "atm", fetch = FetchType.LAZY)
     private List<Session> sessions;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
 }
