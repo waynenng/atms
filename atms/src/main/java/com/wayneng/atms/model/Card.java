@@ -15,7 +15,7 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    
 
     @OneToMany(mappedBy = "card")
     private List<Transaction> transactions;

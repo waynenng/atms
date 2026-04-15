@@ -1,10 +1,12 @@
 package com.wayneng.atms.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "atms")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,14 +17,30 @@ public class ATM {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+    @Column(unique = true, nullable = false)
+    private String atmCode;
 
-    @OneToMany(mappedBy = "atm")
+    @Column(nullable = false)
+    private String locationName;
+
+    @Column(nullable = false)
+    private String status;
+
+    @Column(nullable = false)
+    private BigDecimal cashAvailable;
+
+    @Column(nullable = false)
+    private String currency;
+
+    @Column(nullable = false)
+    private BigDecimal perTransactionLimit;
+
+    @OneToMany(mappedBy = "atm", fetch = FetchType.LAZY)
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "atm")
+    @OneToMany(mappedBy = "atm", fetch = FetchType.LAZY)
     private List<Session> sessions;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Bank bank;
 }
