@@ -15,7 +15,7 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    
     
     @OneToMany(mappedBy = "session")
     private List<Transaction> transactions;

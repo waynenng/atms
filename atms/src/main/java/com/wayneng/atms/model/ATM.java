@@ -15,7 +15,7 @@ public class ATM {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    
 
     @OneToMany(mappedBy = "atm")
     private List<Transaction> transactions;
