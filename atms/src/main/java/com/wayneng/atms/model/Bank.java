@@ -9,20 +9,20 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ATM {
+public class Bank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
 
+    @OneToMany(mappedBy = "bank")
+    private List<Customer> cusomters;
 
-    @OneToMany(mappedBy = "atm")
-    private List<Transaction> transactions;
+    @OneToMany(mappedBy = "bank")
+    private List<ATM> atms;
 
-    @OneToMany(mappedBy = "atm")
-    private List<Session> sessions;
-
-    @ManyToOne
-    private Bank bank;
+    @OneToMany(mappedBy = "bank")
+    private List<ATM> accounts;
 }

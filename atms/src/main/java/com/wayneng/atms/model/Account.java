@@ -49,4 +49,7 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Bank bank;
 }
