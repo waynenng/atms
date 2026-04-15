@@ -20,6 +20,9 @@ public class Customer {
     private String fullName;
 
     @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String status;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
