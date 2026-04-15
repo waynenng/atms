@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "banks")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,14 +16,18 @@ public class Bank {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+    @Column(unique = true, nullable = false)
+    private String bankCode;
 
-    @OneToMany(mappedBy = "bank")
-    private List<Customer> cusomters;
+    @Column(nullable = false)
+    private String name;
 
-    @OneToMany(mappedBy = "bank")
+    @OneToMany(mappedBy = "bank", fetch = FetchType.LAZY)
+    private List<Customer> customers;
+
+    @OneToMany(mappedBy = "bank", fetch = FetchType.LAZY)
     private List<ATM> atms;
 
-    @OneToMany(mappedBy = "bank")
-    private List<ATM> accounts;
+    @OneToMany(mappedBy = "bank", fetch = FetchType.LAZY)
+    private List<Account> accounts;
 }
