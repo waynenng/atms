@@ -15,9 +15,11 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
-    private String email;
+    
 
     @OneToMany(mappedBy = "customer")
     private List<Account> accounts;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Card> cards;
 }

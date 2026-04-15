@@ -1,5 +1,6 @@
 package com.wayneng.atms.model;
 
+import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,23 +9,17 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class ATM {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    
 
-    @ManyToOne
-    private Account account;
 
-    @ManyToOne
-    private Card card;
+    @OneToMany(mappedBy = "atm")
+    private List<Transaction> transactions;
 
-    @ManyToOne
-    private Session session;
-
-    @ManyToOne
-    private ATM atm;
+    @OneToMany(mappedBy = "atm")
+    private List<Session> sessions;
 }

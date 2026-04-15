@@ -1,28 +1,31 @@
 package com.wayneng.atms.model;
 
+import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account {
-
+public class Card {
+    
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
 
-    @OneToMany(mappedBy = "account")
+
+    @OneToMany(mappedBy = "card")
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "account")
-    private List<Card> cards;
+    @OneToMany(mappedBy = "card")
+    private List<Session> sessions;
 
     @ManyToOne
     private Customer customer;
+
+    @ManyToOne
+    private Account account;
 }
