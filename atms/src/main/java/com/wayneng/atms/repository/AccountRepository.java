@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
+    Optional<Account> findByAccountNumberAndAccountStatus(String accountNumber, String accountStatus);
+
     Optional<Account> findByAccountNumber(String accountNumber);
 
     Optional<Account> findByCardsCardNumber(String cardNumber);

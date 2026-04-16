@@ -24,7 +24,7 @@ public class Card {
     private String cardType;
 
     @Column(nullable = false)
-    private String status;
+    private String cardStatus;
 
     @Column(nullable = false)
     private String pinHash;
