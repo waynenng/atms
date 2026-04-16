@@ -21,7 +21,7 @@ public class Session {
     private Boolean authenticated;
 
     @Column(nullable = false)
-    private String status;
+    private String sessionStatus;
 
     @Column(nullable = false)
     private Integer failedPinAttempts;
