@@ -24,7 +24,7 @@ public class ATM {
     private String locationName;
 
     @Column(nullable = false)
-    private String status;
+    private String atmStatus;
 
     @Column(nullable = false)
     private BigDecimal cashAvailable;

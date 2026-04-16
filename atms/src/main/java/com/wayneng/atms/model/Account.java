@@ -27,7 +27,7 @@ public class Account {
     private String currency;
 
     @Column(nullable = false)
-    private String status;
+    private String accountStatus;
 
     @Column(precision = 19, scale = 2)
     private BigDecimal availableBalance = BigDecimal.ZERO;
