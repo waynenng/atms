@@ -18,10 +18,10 @@ public class Transaction {
     private Long id;
 
     @Column(nullable = false)
-    private String type;
+    private String transactionType;
 
     @Column(nullable = false)
-    private String status;
+    private String transactionStatus;
 
     @Column(nullable = false)
     private LocalDateTime transactionTime;
