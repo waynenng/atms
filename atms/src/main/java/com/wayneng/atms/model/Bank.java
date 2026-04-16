@@ -19,7 +19,7 @@ public class Bank {
     @Column(unique = true, nullable = false)
     private String bankCode;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "bank", fetch = FetchType.LAZY)
