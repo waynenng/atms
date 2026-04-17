@@ -17,21 +17,25 @@ public class ATM {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // USED
     @Column(unique = true, nullable = false)
     private String atmCode;
 
     @Column(nullable = false)
     private String locationName;
 
+    // USED
     @Column(nullable = false)
     private String atmStatus;
 
+    // USED
     @Column(nullable = false)
     private BigDecimal cashAvailable;
 
     @Column(nullable = false)
     private String currency;
 
+    // USED
     @Column(nullable = false)
     private BigDecimal perTransactionLimit;
 
