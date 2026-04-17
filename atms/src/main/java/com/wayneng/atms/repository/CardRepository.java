@@ -7,11 +7,12 @@ import com.wayneng.atms.model.Card;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
 
+    // USED
     Optional<Card> findByCardNumber(String cardNumber);
 
+    // USED
     Optional<Card> findByCardNumberAndCardStatus(String cardNumber, String cardStatus);
 
-    List<Card> findByCardStatus(String cardStatus);
-
+    // USED
     List<Card> findByAccountId(Long accountId);
 }

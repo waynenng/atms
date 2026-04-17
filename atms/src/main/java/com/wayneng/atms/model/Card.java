@@ -17,21 +17,25 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // USED
     @Column(unique = true, nullable = false)
     private String cardNumber;
 
     @Column(nullable = false)
     private String cardType;
 
+    // USED
     @Column(nullable = false)
     private String cardStatus;
 
+    // USED
     @Column(nullable = false)
     private String pinHash;
 
     @Column(nullable = false)
     private LocalDate expiryDate;
 
+    // USED
     @Column(nullable = false)
     private int failedPinAttempts;
 
