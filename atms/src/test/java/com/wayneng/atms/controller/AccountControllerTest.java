@@ -8,8 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,14 +43,14 @@ class AccountControllerTest {
         String accountNumber = "1212121212";
         BigDecimal amount = BigDecimal.valueOf(5000);
 
-        doNothing().when(accountService).deposit(accountNumber, amount);
-
         mockMvc.perform(post("/api/accounts/{accountNumber}/deposit", accountNumber)
                     .param("amount", amount.toString())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().string("Deposit successful"));
+
+        verify(accountService).deposit(accountNumber, amount);
     }
 
     @Test
@@ -60,13 +59,13 @@ class AccountControllerTest {
         String accountNumber = "1212121212";
         BigDecimal amount = BigDecimal.valueOf(5000);
 
-        doNothing().when(accountService).withdraw(accountNumber, amount);
-
         mockMvc.perform(post("/api/accounts/{accountNumber}/withdraw", accountNumber)
                     .param("amount", amount.toString())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().string("Withdrawal successful"));
+
+        verify(accountService).withdraw(accountNumber, amount);
     }
 }
