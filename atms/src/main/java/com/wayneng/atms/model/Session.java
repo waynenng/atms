@@ -17,20 +17,30 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // USED
+    @Column(unique = true, nullable = false)
+    private String sessionId;
+
+    // USED
     @Column(nullable = false)
     private Boolean authenticated;
 
+    // USED
     @Column(nullable = false)
     private String sessionStatus;
-
+    
+    // USED
     @Column(nullable = false)
     private Integer failedPinAttempts;
 
+    // USED
     @Column(nullable = false)
     private LocalDateTime startTime;
 
+    // USED
     private LocalDateTime endTime;
 
+    // USED
     private String endReason;
     
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)

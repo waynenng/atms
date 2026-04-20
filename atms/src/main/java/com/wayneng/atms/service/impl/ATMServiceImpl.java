@@ -20,7 +20,7 @@ public class ATMServiceImpl implements ATMService {
     }
 
     // APPROVED
-    private ATM getATMByCode(String atmCode) {
+    public ATM getATMByCode(String atmCode) {
         return atmRepository
             .findByAtmCode(atmCode)
             .orElseThrow(() -> new RuntimeException("ATM not found with code: " + atmCode));
