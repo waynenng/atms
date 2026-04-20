@@ -58,9 +58,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     // APPROVED
     @Override
-    public void updateTransactionStatus(String transactionId, String transactionType) {
+    public void updateTransactionStatus(String transactionId, String transactionStatus) {
         Transaction transaction = getTransactionById(transactionId);
-        transaction.setTransactionStatus(transactionType);
+        transaction.setTransactionStatus(transactionStatus);
         transactionRepository.save(transaction);
     }
 
