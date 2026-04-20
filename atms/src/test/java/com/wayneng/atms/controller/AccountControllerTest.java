@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AccountController.class)
@@ -32,8 +33,9 @@ class AccountControllerTest {
         when(accountService.getBalance(accountNumber)).thenReturn(balance);
 
         mockMvc.perform(get("/api/accounts/{accountNumber}/balance", accountNumber))
-                .andExpect(status().isOk())
-                .andExpect(content().string("5000"));
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("5000"));
     }
 
     @Test
@@ -45,10 +47,11 @@ class AccountControllerTest {
         doNothing().when(accountService).deposit(accountNumber, amount);
 
         mockMvc.perform(post("/api/accounts/{accountNumber}/deposit", accountNumber)
-                        .param("amount", amount.toString()) 
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Deposit successful"));
+                    .param("amount", amount.toString())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("Deposit successful"));
     }
 
     @Test
@@ -60,9 +63,10 @@ class AccountControllerTest {
         doNothing().when(accountService).withdraw(accountNumber, amount);
 
         mockMvc.perform(post("/api/accounts/{accountNumber}/withdraw", accountNumber)
-                        .param("amount", amount.toString())
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Withdrawal successful"));
+                    .param("amount", amount.toString())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("Withdrawal successful"));
     }
 }
