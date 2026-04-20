@@ -69,6 +69,7 @@ public class CardServiceImpl implements CardService {
         Card card = getCardByNumber(cardNumber);
 
         card.setFailedPinAttempts(0);
+        
         cardRepository.save(card);
     }
 
@@ -78,12 +79,14 @@ public class CardServiceImpl implements CardService {
         Card card = getCardByNumber(cardNumber);
 
         card.setCardStatus("BLOCKED");
+
         cardRepository.save(card);
     }
 
     // APPROVED
     @Override
-    public List<Card> getCardsByAccount(Long accountId) {
-        return cardRepository.findByAccountId(accountId);
+    public List<Card> getCardsByAccount(String accountNumber) {
+        
+        return cardRepository.findByAccount_AccountNumber(accountNumber);
     }
 }

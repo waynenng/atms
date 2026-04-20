@@ -6,7 +6,7 @@ import com.wayneng.atms.model.Session;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
-    Optional<Session> findByAtmAtmCodeAndSessionStatus(String atmCode, String sessionStatus);
+    Optional<Session> findByAtm_AtmCodeAndSessionStatus(String atmCode, String sessionStatus);
 
     Optional<Session> findBySessionId(String sessionId);
 }

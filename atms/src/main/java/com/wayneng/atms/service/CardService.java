@@ -17,5 +17,5 @@ public interface CardService {
 
     void blockCard(String cardNumber);
 
-    List<Card> getCardsByAccount(Long accountId);
+    List<Card> getCardsByAccount(String accountNumber);
 }

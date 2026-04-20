@@ -35,7 +35,7 @@ public class SessionServiceImpl implements SessionService {
         Card card = cardService.getActiveCard(cardNumber);
         ATM atm = atmService.getATMByCode(atmCode);
 
-        sessionRepository.findByAtmAtmCodeAndSessionStatus(atmCode, "ACTIVE")
+        sessionRepository.findByAtm_AtmCodeAndSessionStatus(atmCode, "ACTIVE")
                 .ifPresent(s -> {
                     throw new RuntimeException("ATM already in use");
                 });
@@ -54,7 +54,7 @@ public class SessionServiceImpl implements SessionService {
     // APPROVED
     @Override
     public Session getActiveSessionByATM(String atmCode) {
-        return sessionRepository.findByAtmAtmCodeAndSessionStatus(atmCode, "ACTIVE")
+        return sessionRepository.findByAtm_AtmCodeAndSessionStatus(atmCode, "ACTIVE")
                 .orElseThrow(() -> new RuntimeException("No active session for this ATM"));
     }
 
