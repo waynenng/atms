@@ -6,6 +6,5 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    // USED
     Optional<Account> findByAccountNumberAndAccountStatus(String accountNumber, String accountStatus);
 }

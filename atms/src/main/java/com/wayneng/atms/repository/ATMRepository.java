@@ -6,6 +6,5 @@ import java.util.Optional;
 
 public interface ATMRepository extends JpaRepository<ATM, Long> {
 
-    // USED
     Optional<ATM> findByAtmCode(String atmCode);
 }

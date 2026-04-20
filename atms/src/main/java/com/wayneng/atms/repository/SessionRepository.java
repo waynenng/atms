@@ -8,5 +8,5 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     Optional<Session> findByAtmAtmCodeAndSessionStatus(String atmCode, String sessionStatus);
 
-    Optional<Session> findBySessionId(Long sessionId);
+    Optional<Session> findBySessionId(String sessionId);
 }

@@ -22,7 +22,8 @@ public class SessionServiceImpl implements SessionService {
     private static final int MAX_FAILED_ATTEMPTS = 3;
 
     // APPROVED
-    private Session getSession(Long sessionId) {
+    @Override
+    public Session getSession(String sessionId) {
         return sessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
     }
@@ -59,7 +60,7 @@ public class SessionServiceImpl implements SessionService {
 
     // APPROVED
     @Override
-    public void recordFailedPin(Long sessionId) {
+    public void recordFailedPin(String sessionId) {
 
         Session session = getSession(sessionId);
 
@@ -76,24 +77,24 @@ public class SessionServiceImpl implements SessionService {
 
     // APPROVED
     @Override
-    public void authenticateSession(Long sessionId) {
+    public void authenticateSession(String sessionId) {
 
         Session session = getSession(sessionId);
 
         session.setAuthenticated(true);
-        
+
         sessionRepository.save(session);
     }
 
     // APPROVED
     @Override
-    public boolean isAuthenticated(Long sessionId) {
+    public boolean isAuthenticated(String sessionId) {
         return getSession(sessionId).getAuthenticated();
     }
 
     // APPROVED
     @Override
-    public void endSession(Long sessionId, String reason) {
+    public void endSession(String sessionId, String reason) {
 
         Session session = getSession(sessionId);
 

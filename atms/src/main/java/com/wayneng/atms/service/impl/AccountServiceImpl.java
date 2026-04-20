@@ -2,24 +2,26 @@ package com.wayneng.atms.service.impl;
 
 import com.wayneng.atms.model.Account;
 import com.wayneng.atms.repository.AccountRepository;
+import com.wayneng.atms.repository.TransactionRepository;
 import com.wayneng.atms.service.AccountService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
     // APPROVED
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
     // APPROVED
-    public AccountServiceImpl(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
-
-    // APPROVED
-    private Account getActiveAccount(String accountNumber) {
+    @Override
+    public Account getActiveAccount(String accountNumber) {
         return accountRepository
             .findByAccountNumberAndAccountStatus(accountNumber, "ACTIVE")
             .orElseThrow(() -> new RuntimeException("Account not found or inactive"));
@@ -54,7 +56,7 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
-    // PENDING
+    // APPROVED
     @Override
     @Transactional
     public void withdraw(String accountNumber, BigDecimal amount) {
@@ -76,9 +78,18 @@ public class AccountServiceImpl implements AccountService {
             throw new RuntimeException("Minimum balance violated");
         }
 
-        if (account.getDailyWithdrawalLimit() != null &&
-            amount.compareTo(account.getDailyWithdrawalLimit()) > 0) {
-            throw new RuntimeException("Daily withdrawal limit exceeded");
+        if (account.getDailyWithdrawalLimit() != null) {
+
+            LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+
+            BigDecimal withdrawnToday = transactionRepository
+                    .sumWithdrawalsToday(account.getAccountNumber(), startOfDay);
+
+            BigDecimal newTotal = withdrawnToday.add(amount);
+
+            if (newTotal.compareTo(account.getDailyWithdrawalLimit()) > 0) {
+                throw new RuntimeException("Daily withdrawal limit exceeded");
+            }
         }
 
         account.setAvailableBalance(newBalance);
