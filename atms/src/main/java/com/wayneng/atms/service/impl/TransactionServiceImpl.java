@@ -26,7 +26,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final SessionService sessionService;
     private final ATMService atmService;
 
-    // APPROVED
     @Override
     public Transaction createTransaction(
             String transactionType,
@@ -56,7 +55,6 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    // APPROVED
     @Override
     public void updateTransactionStatus(String transactionId, String transactionStatus) {
         Transaction transaction = getTransactionById(transactionId);
@@ -64,7 +62,6 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.save(transaction);
     }
 
-    // APPROVED
     @Override
     public Transaction getTransactionById(String transactionId) {
         return transactionRepository.findByTransactionId(transactionId)

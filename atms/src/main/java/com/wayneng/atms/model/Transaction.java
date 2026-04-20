@@ -17,27 +17,21 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // USED
     @Column(unique = true, nullable = false)
     private String transactionId;
 
-    // USED
     @Column(nullable = false)
     private String transactionType;
 
-    // USED
     @Column(nullable = false)
     private String transactionStatus;
 
-    // USED
     @Column(nullable = false)
     private LocalDateTime transactionTime;
 
-    // USED
     @Column(nullable = true)
     private BigDecimal amount;
 
-    // USED
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

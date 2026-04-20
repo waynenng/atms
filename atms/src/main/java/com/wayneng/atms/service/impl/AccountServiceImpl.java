@@ -15,11 +15,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    // APPROVED
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    // APPROVED
     @Override
     public Account getActiveAccount(String accountNumber) {
         return accountRepository
@@ -27,14 +25,12 @@ public class AccountServiceImpl implements AccountService {
             .orElseThrow(() -> new RuntimeException("Account not found or inactive"));
     }
 
-    // APPROVED
     @Override
     public BigDecimal getBalance(String accountNumber) {
         Account account = getActiveAccount(accountNumber);
         return account.getAvailableBalance();
     }
 
-    // APPROVED
     @Override
     @Transactional
     public void deposit(String accountNumber, BigDecimal amount) {
@@ -56,7 +52,6 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
-    // APPROVED
     @Override
     @Transactional
     public void withdraw(String accountNumber, BigDecimal amount) {

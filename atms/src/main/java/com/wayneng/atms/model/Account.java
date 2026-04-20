@@ -17,7 +17,6 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // USED
     @Column(unique = true, nullable = false)
     private String accountNumber;
 
@@ -27,23 +26,18 @@ public class Account {
     @Column(nullable = false)
     private String currency;
 
-    // USED
     @Column(nullable = false)
     private String accountStatus;
 
-    // USED
     @Column(precision = 19, scale = 2)
     private BigDecimal availableBalance = BigDecimal.ZERO;
 
-    // USED
     @Column(precision = 19, scale = 2)
     private BigDecimal ledgerBalance = BigDecimal.ZERO;
 
-    // USED
     @Column(precision = 19, scale = 2)
     private BigDecimal minimumBalance;
 
-    // USED
     @Column(precision = 19, scale = 2)
     private BigDecimal dailyWithdrawalLimit;
 

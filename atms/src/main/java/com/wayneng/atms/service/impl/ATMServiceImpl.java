@@ -3,30 +3,24 @@ package com.wayneng.atms.service.impl;
 import com.wayneng.atms.model.ATM;
 import com.wayneng.atms.repository.ATMRepository;
 import com.wayneng.atms.service.ATMService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ATMServiceImpl implements ATMService {
 
-    // APPROVED
     private final ATMRepository atmRepository;
 
-    // APPROVED
-    public ATMServiceImpl(ATMRepository atmRepository) {
-        this.atmRepository = atmRepository;
-    }
-
-    // APPROVED
     public ATM getATMByCode(String atmCode) {
         return atmRepository
             .findByAtmCode(atmCode)
             .orElseThrow(() -> new RuntimeException("ATM not found with code: " + atmCode));
     }
 
-    // APPROVED
     @Override
     public void deductCash(String atmCode, BigDecimal amount) {
         ATM atm = getATMByCode(atmCode);
@@ -51,7 +45,6 @@ public class ATMServiceImpl implements ATMService {
         atmRepository.save(atm);
     }
 
-    // APPROVED
     @Override
     public void addCash(String atmCode, BigDecimal amount) {
         ATM atm = getATMByCode(atmCode);

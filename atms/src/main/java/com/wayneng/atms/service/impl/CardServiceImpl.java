@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
 
-    // APPROVED
     private final CardRepository cardRepository;
-
-    // APPROVED
     private static final int MAX_FAILED_ATTEMPTS = 5;
 
     @Override
@@ -24,7 +21,6 @@ public class CardServiceImpl implements CardService {
             .orElseThrow(() -> new RuntimeException("Card not found"));
     }
 
-    // APPROVED
     @Override
     public Card getActiveCard(String cardNumber) {
         return cardRepository
@@ -32,7 +28,6 @@ public class CardServiceImpl implements CardService {
             .orElseThrow(() -> new RuntimeException("Card is not active"));
     }
 
-    // APPROVED
     @Override
     public boolean validatePin(String cardNumber, String rawPin) {
         Card card = getActiveCard(cardNumber);
@@ -48,7 +43,6 @@ public class CardServiceImpl implements CardService {
         return isValid;
     }
 
-    // APPROVED
     @Override
     public void incrementFailedAttempts(String cardNumber) {
         Card card = getCardByNumber(cardNumber);
@@ -63,7 +57,6 @@ public class CardServiceImpl implements CardService {
         cardRepository.save(card);
     }
 
-    // APPROVED
     @Override
     public void resetFailedAttempts(String cardNumber) {
         Card card = getCardByNumber(cardNumber);
@@ -73,7 +66,6 @@ public class CardServiceImpl implements CardService {
         cardRepository.save(card);
     }
 
-    // APPROVED
     @Override
     public void blockCard(String cardNumber) {
         Card card = getCardByNumber(cardNumber);
@@ -83,7 +75,6 @@ public class CardServiceImpl implements CardService {
         cardRepository.save(card);
     }
 
-    // APPROVED
     @Override
     public List<Card> getCardsByAccount(String accountNumber) {
         

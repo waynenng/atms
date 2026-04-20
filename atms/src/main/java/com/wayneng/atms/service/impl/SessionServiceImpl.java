@@ -18,17 +18,14 @@ public class SessionServiceImpl implements SessionService {
     private final SessionRepository sessionRepository;
     private final CardService cardService;
     private final ATMService atmService;
-
     private static final int MAX_FAILED_ATTEMPTS = 3;
 
-    // APPROVED
     @Override
     public Session getSession(String sessionId) {
         return sessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
     }
 
-    // APPROVED
     @Override
     public Session startSession(String cardNumber, String atmCode) {
 
@@ -51,14 +48,12 @@ public class SessionServiceImpl implements SessionService {
         return sessionRepository.save(session);
     }
 
-    // APPROVED
     @Override
     public Session getActiveSessionByATM(String atmCode) {
         return sessionRepository.findByAtm_AtmCodeAndSessionStatus(atmCode, "ACTIVE")
                 .orElseThrow(() -> new RuntimeException("No active session for this ATM"));
     }
 
-    // APPROVED
     @Override
     public void recordFailedPin(String sessionId) {
 
@@ -75,7 +70,6 @@ public class SessionServiceImpl implements SessionService {
         sessionRepository.save(session);
     }
 
-    // APPROVED
     @Override
     public void authenticateSession(String sessionId) {
 
@@ -86,13 +80,11 @@ public class SessionServiceImpl implements SessionService {
         sessionRepository.save(session);
     }
 
-    // APPROVED
     @Override
     public boolean isAuthenticated(String sessionId) {
         return getSession(sessionId).getAuthenticated();
     }
 
-    // APPROVED
     @Override
     public void endSession(String sessionId, String reason) {
 
