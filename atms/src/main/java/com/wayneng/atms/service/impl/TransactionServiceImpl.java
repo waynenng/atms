@@ -48,7 +48,6 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTransactionTime(LocalDateTime.now());
         transaction.setAmount(amount);
         transaction.setDescription(description);
-
         transaction.setAccount(account);
         transaction.setCard(card);
         transaction.setSession(session);
