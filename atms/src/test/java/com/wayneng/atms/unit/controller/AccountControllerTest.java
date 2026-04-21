@@ -1,5 +1,6 @@
-package com.wayneng.atms.controller;
+package com.wayneng.atms.unit.controller;
 
+import com.wayneng.atms.controller.AccountController;
 import com.wayneng.atms.service.AccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

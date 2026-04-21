@@ -1,5 +1,6 @@
-package com.wayneng.atms.controller;
+package com.wayneng.atms.unit.controller;
 
+import com.wayneng.atms.controller.ATMController;
 import com.wayneng.atms.model.ATM;
 import com.wayneng.atms.service.ATMService;
 import org.junit.jupiter.api.Test;
