@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.wayneng.atms.model.Card;
 
-public interface CardRepository extends JpaRepository<Card, Long> {
+public interface CardRepository extends JpaRepository<Card, String> {
 
     Optional<Card> findByCardNumber(String cardNumber);
 

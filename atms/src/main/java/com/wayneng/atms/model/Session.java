@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "sessions")
@@ -14,10 +15,7 @@ import lombok.*;
 public class Session {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true, nullable = false)
+    @UuidGenerator
     private String sessionId;
 
     @Column(nullable = false)

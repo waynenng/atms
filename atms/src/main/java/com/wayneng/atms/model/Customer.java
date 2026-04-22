@@ -2,6 +2,8 @@ package com.wayneng.atms.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
+
 import java.util.List;
 
 @Entity
@@ -13,8 +15,8 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    private String customerId;
 
     @Column(nullable = false)
     private String fullName;
