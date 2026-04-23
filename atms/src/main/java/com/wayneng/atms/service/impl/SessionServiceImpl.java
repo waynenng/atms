@@ -64,7 +64,6 @@ public class SessionServiceImpl implements SessionService {
 
         if (attempts >= MAX_FAILED_ATTEMPTS) {
             endSession(sessionId, "CARD_BLOCKED");
-            // optionally: cardService.blockCard(...)
         }
 
         sessionRepository.save(session);
