@@ -45,7 +45,6 @@ class TransactionServiceImplTest {
 
         String transactionType = "WITHDRAWAL";
         BigDecimal amount = BigDecimal.valueOf(100);
-        String description = "ATM Withdrawal";
         String accountNumber = "ACC123";
         String cardNumber = "CARD123";
         String sessionId = "SESSION123";
@@ -69,7 +68,6 @@ class TransactionServiceImplTest {
         Transaction result = transactionService.createTransaction(
                 transactionType,
                 amount,
-                description,
                 accountNumber,
                 cardNumber,
                 sessionId,
@@ -83,7 +81,6 @@ class TransactionServiceImplTest {
         assertEquals(transactionType, captured.getTransactionType());
         assertEquals("PENDING", captured.getTransactionStatus());
         assertEquals(amount, captured.getAmount());
-        assertEquals(description, captured.getDescription());
         assertEquals(account, captured.getAccount());
         assertEquals(card, captured.getCard());
         assertEquals(session, captured.getSession());

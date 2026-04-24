@@ -30,7 +30,6 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction createTransaction(
             String transactionType,
             BigDecimal amount,
-            String description,
             String accountNumber,
             String cardNumber,
             String sessionId,
@@ -46,7 +45,6 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTransactionStatus("PENDING");
         transaction.setTransactionTime(LocalDateTime.now());
         transaction.setAmount(amount);
-        transaction.setDescription(description);
         transaction.setAccount(account);
         transaction.setCard(card);
         transaction.setSession(session);
