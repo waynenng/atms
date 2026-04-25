@@ -5,6 +5,7 @@ import com.wayneng.atms.model.Transaction;
 import com.wayneng.atms.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @Service
@@ -15,8 +16,10 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     private final SessionService sessionService;
     private final AccountService accountService;
     private final TransactionService transactionService;
+    private final ATMService atmService;
 
     @Override
+    @Transactional
     public void withdraw(String cardNumber, String pin, String atmCode, BigDecimal amount) {
 
         boolean success = false;
@@ -47,6 +50,8 @@ public class WithdrawalServiceImpl implements WithdrawalService {
             sessionService.authenticateSession(session.getSessionId());
 
             accountService.withdraw(accountNumber, amount);
+
+            atmService.deductCash(atmCode, amount);
 
             transactionService.updateTransactionStatus(
                     transaction.getTransactionId(),
