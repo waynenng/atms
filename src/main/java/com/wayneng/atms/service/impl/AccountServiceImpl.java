@@ -80,6 +80,8 @@ public class AccountServiceImpl implements AccountService {
             BigDecimal withdrawnToday = transactionRepository
                     .sumWithdrawalsToday(account.getAccountNumber(), startOfDay);
 
+            withdrawnToday = withdrawnToday == null ? BigDecimal.ZERO : withdrawnToday;
+
             BigDecimal newTotal = withdrawnToday.add(amount);
 
             if (newTotal.compareTo(account.getDailyWithdrawalLimit()) > 0) {
