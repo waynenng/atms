@@ -21,9 +21,6 @@ public class Customer {
     @Column(nullable = false)
     private String fullName;
 
-    @Column(nullable = false, unique = true)
-    private String customerNumber;
-
     @Column(nullable = false)
     private String email;
 
