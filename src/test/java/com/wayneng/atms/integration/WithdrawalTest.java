@@ -111,4 +111,42 @@ class WithdrawalTest {
         assertThat(session.getSessionStatus()).isEqualTo("ENDED");
         assertThat(session.getAuthenticated()).isTrue();
     }
+
+    // FAILURE - INVALID PIN
+    @Test
+    void shouldFailWithdrawal_invalidPin() {
+
+        BigDecimal withdrawAmount = new BigDecimal("200");
+
+        assertThatThrownBy(() ->
+                withdrawalService.withdraw(CARD_NUMBER, "9999", ATM_CODE, withdrawAmount)
+        ).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Invalid PIN");
+
+        Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
+        assertThat(account.getAvailableBalance())
+                .isEqualByComparingTo("1000.00");
+
+        ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
+        assertThat(atm.getCashAvailable())
+                .isEqualByComparingTo("5000");
+
+        assertThat(transactionRepository.findAll()).hasSize(1);
+
+        Transaction tx = transactionRepository.findAll().get(0);
+        assertThat(tx.getTransactionType()).isEqualTo("WITHDRAWAL");
+        assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
+        assertThat(tx.getAmount()).isEqualByComparingTo("200");
+
+        assertThat(sessionRepository.findAll()).hasSize(1);
+
+        Session session = sessionRepository.findAll().get(0);
+        assertThat(session.getSessionStatus()).isEqualTo("ENDED");
+        assertThat(session.getEndReason()).isEqualTo("FAILED");
+        assertThat(session.getEndTime()).isNotNull();
+
+        assertThat(session.getFailedPinAttempts()).isEqualTo(1);
+
+        assertThat(session.getAuthenticated()).isFalse();
+    }
 }
