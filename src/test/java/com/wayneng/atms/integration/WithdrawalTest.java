@@ -57,10 +57,10 @@ class WithdrawalTest {
         account.setAccountType("SAVINGS");
         account.setCurrency("MYR");
         account.setAccountStatus("ACTIVE");
-        account.setAvailableBalance(new BigDecimal("1000.00"));
-        account.setLedgerBalance(new BigDecimal("1000.00"));
-        account.setMinimumBalance(BigDecimal.ZERO);
-        account.setDailyWithdrawalLimit(new BigDecimal("5000"));
+        account.setAvailableBalance(new BigDecimal("6000.00"));
+        account.setLedgerBalance(new BigDecimal("6000.00"));
+        account.setMinimumBalance(new BigDecimal("100.00"));
+        account.setDailyWithdrawalLimit(new BigDecimal("5000.00"));
         account.setCustomer(customer);
         account.setBank(bank);
         accountRepository.save(account);
@@ -80,9 +80,9 @@ class WithdrawalTest {
         atm.setAtmCode(ATM_CODE);
         atm.setLocationName("Happy Garden, KL");
         atm.setAtmStatus("ACTIVE");
-        atm.setCashAvailable(new BigDecimal("5000"));
+        atm.setCashAvailable(new BigDecimal("3000.00"));
         atm.setCurrency("MYR");
-        atm.setPerTransactionLimit(new BigDecimal("2000"));
+        atm.setPerTransactionLimit(new BigDecimal("5000.00"));
         atm.setBank(bank);
         atmRepository.save(atm);
     }
@@ -91,21 +91,21 @@ class WithdrawalTest {
     @Test
     void shouldWithdrawSuccessfully() {
 
-        BigDecimal withdrawAmount = new BigDecimal("200");
+        BigDecimal withdrawAmount = new BigDecimal("200.00");
 
         withdrawalService.withdraw(CARD_NUMBER, PIN, ATM_CODE, withdrawAmount);
 
         Account updatedAccount = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
         assertThat(updatedAccount.getAvailableBalance())
-                .isEqualByComparingTo("800.00");
+                .isEqualByComparingTo("5800.00");
 
         ATM updatedATM = atmRepository.findById(ATM_CODE).orElseThrow();
         assertThat(updatedATM.getCashAvailable())
-                .isEqualByComparingTo("4800");
+                .isEqualByComparingTo("2800.00");
 
         Transaction tx = transactionRepository.findAll().get(0);
         assertThat(tx.getTransactionStatus()).isEqualTo("SUCCESS");
-        assertThat(tx.getAmount()).isEqualByComparingTo("200");
+        assertThat(tx.getAmount()).isEqualByComparingTo("200.00");
 
         Session session = sessionRepository.findAll().get(0);
         assertThat(session.getSessionStatus()).isEqualTo("ENDED");
@@ -116,27 +116,27 @@ class WithdrawalTest {
     @Test
     void shouldFailWithdrawal_invalidPin() {
 
-        BigDecimal withdrawAmount = new BigDecimal("200");
+        BigDecimal withdrawAmount = new BigDecimal("200.00");
 
         assertThatThrownBy(() ->
-                withdrawalService.withdraw(CARD_NUMBER, "9999", ATM_CODE, withdrawAmount)
+                withdrawalService.withdraw(CARD_NUMBER, "999999", ATM_CODE, withdrawAmount)
         ).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Invalid PIN");
 
         Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
         assertThat(account.getAvailableBalance())
-                .isEqualByComparingTo("1000.00");
+                .isEqualByComparingTo("6000.00");
 
         ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
         assertThat(atm.getCashAvailable())
-                .isEqualByComparingTo("5000");
+                .isEqualByComparingTo("3000.00");
 
         assertThat(transactionRepository.findAll()).hasSize(1);
 
         Transaction tx = transactionRepository.findAll().get(0);
         assertThat(tx.getTransactionType()).isEqualTo("WITHDRAWAL");
         assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
-        assertThat(tx.getAmount()).isEqualByComparingTo("200");
+        assertThat(tx.getAmount()).isEqualByComparingTo("200.00");
 
         assertThat(sessionRepository.findAll()).hasSize(1);
 
@@ -152,7 +152,7 @@ class WithdrawalTest {
     @Test
     void shouldFailWithdrawal_insufficientBalance() {
 
-        BigDecimal withdrawAmount = new BigDecimal("1100");
+        BigDecimal withdrawAmount = new BigDecimal("6100.00");
 
         assertThatThrownBy(() ->
                 withdrawalService.withdraw(CARD_NUMBER, PIN, ATM_CODE, withdrawAmount)
@@ -161,18 +161,53 @@ class WithdrawalTest {
 
         Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
         assertThat(account.getAvailableBalance())
-                .isEqualByComparingTo("1000.00");
+                .isEqualByComparingTo("6000.00");
 
         ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
         assertThat(atm.getCashAvailable())
-                .isEqualByComparingTo("5000");
+                .isEqualByComparingTo("3000.00");
 
         assertThat(transactionRepository.findAll()).hasSize(1);
 
         Transaction tx = transactionRepository.findAll().get(0);
         assertThat(tx.getTransactionType()).isEqualTo("WITHDRAWAL");
         assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
-        assertThat(tx.getAmount()).isEqualByComparingTo("1100");
+        assertThat(tx.getAmount()).isEqualByComparingTo("6100.00");
+
+        assertThat(sessionRepository.findAll()).hasSize(1);
+
+        Session session = sessionRepository.findAll().get(0);
+        assertThat(session.getSessionStatus()).isEqualTo("ENDED");
+        assertThat(session.getEndReason()).isEqualTo("FAILED");
+        assertThat(session.getEndTime()).isNotNull();
+        assertThat(session.getAuthenticated()).isTrue();
+    }
+
+    // FAILURE - ATM INSUFFICIENT CASH
+    @Test
+    void shouldFailWithdrawal_insufficientCash() {
+
+        BigDecimal withdrawAmount = new BigDecimal("3100.00");
+
+        assertThatThrownBy(() ->
+                withdrawalService.withdraw(CARD_NUMBER, PIN, ATM_CODE, withdrawAmount)
+        ).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("ATM has insufficient cash");
+
+        Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
+        assertThat(account.getAvailableBalance())
+                .isEqualByComparingTo("6000.00");
+
+        ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
+        assertThat(atm.getCashAvailable())
+                .isEqualByComparingTo("3000.00");
+
+        assertThat(transactionRepository.findAll()).hasSize(1);
+
+        Transaction tx = transactionRepository.findAll().get(0);
+        assertThat(tx.getTransactionType()).isEqualTo("WITHDRAWAL");
+        assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
+        assertThat(tx.getAmount()).isEqualByComparingTo("3100.00");
 
         assertThat(sessionRepository.findAll()).hasSize(1);
 

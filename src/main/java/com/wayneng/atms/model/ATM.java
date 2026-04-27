@@ -23,13 +23,13 @@ public class ATM {
     @Column(nullable = false)
     private String atmStatus;
 
-    @Column(nullable = false)
+    @Column(precision = 19, scale = 2)
     private BigDecimal cashAvailable;
 
     @Column(nullable = false)
     private String currency;
 
-    @Column(nullable = false)
+    @Column(precision = 19, scale = 2)
     private BigDecimal perTransactionLimit;
 
     @OneToMany(mappedBy = "atm", fetch = FetchType.LAZY)
