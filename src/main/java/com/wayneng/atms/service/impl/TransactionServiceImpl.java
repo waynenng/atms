@@ -3,6 +3,8 @@ package com.wayneng.atms.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import com.wayneng.atms.model.ATM;
 import com.wayneng.atms.model.Account;
 import com.wayneng.atms.model.Card;
@@ -27,6 +29,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final ATMService atmService;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Transaction createTransaction(
             String transactionType,
             BigDecimal amount,
@@ -54,6 +57,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateTransactionStatus(String transactionId, String transactionStatus) {
         Transaction transaction = getTransactionById(transactionId);
         transaction.setTransactionStatus(transactionStatus);

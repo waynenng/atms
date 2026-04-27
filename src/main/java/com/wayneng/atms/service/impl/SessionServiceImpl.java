@@ -2,6 +2,8 @@ package com.wayneng.atms.service.impl;
 
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import com.wayneng.atms.model.ATM;
 import com.wayneng.atms.model.Card;
 import com.wayneng.atms.model.Session;
@@ -27,6 +29,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Session startSession(String cardNumber, String atmCode) {
 
         Card card = cardService.getActiveCard(cardNumber);
@@ -85,6 +88,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void endSession(String sessionId, String reason) {
 
         Session session = getSession(sessionId);
