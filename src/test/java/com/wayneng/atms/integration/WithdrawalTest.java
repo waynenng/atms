@@ -217,4 +217,48 @@ class WithdrawalTest {
         assertThat(session.getEndTime()).isNotNull();
         assertThat(session.getAuthenticated()).isTrue();
     }
+
+    // FAILURE - ATM TRANSACTION LIMIT EXCEEDED
+    @Test
+    void shouldFailWithdrawal_transactionLimitExceeded() {
+
+        Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
+        account.setAvailableBalance(new BigDecimal("7000.00"));
+        account.setLedgerBalance(new BigDecimal("7000.00"));
+        account.setDailyWithdrawalLimit(new BigDecimal("10000.00"));
+        accountRepository.save(account);
+
+        ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
+        atm.setCashAvailable(new BigDecimal("6000.00"));
+        atmRepository.save(atm);
+
+        BigDecimal withdrawAmount = new BigDecimal("5100.00");
+
+        assertThatThrownBy(() ->
+                withdrawalService.withdraw(CARD_NUMBER, PIN, ATM_CODE, withdrawAmount)
+        ).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Amount exceeds per transaction limit");
+
+        Account accountAfter = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
+        assertThat(accountAfter.getAvailableBalance()).isEqualByComparingTo("7000.00");
+        assertThat(accountAfter.getLedgerBalance()).isEqualByComparingTo("7000.00");
+
+        ATM atmAfter = atmRepository.findById(ATM_CODE).orElseThrow();
+        assertThat(atmAfter.getCashAvailable()).isEqualByComparingTo("6000.00");
+
+        assertThat(transactionRepository.findAll()).hasSize(1);
+
+        Transaction tx = transactionRepository.findAll().get(0);
+        assertThat(tx.getTransactionType()).isEqualTo("WITHDRAWAL");
+        assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
+        assertThat(tx.getAmount()).isEqualByComparingTo("5100.00");
+
+        assertThat(sessionRepository.findAll()).hasSize(1);
+
+        Session session = sessionRepository.findAll().get(0);
+        assertThat(session.getSessionStatus()).isEqualTo("ENDED");
+        assertThat(session.getEndReason()).isEqualTo("FAILED");
+        assertThat(session.getEndTime()).isNotNull();
+        assertThat(session.getAuthenticated()).isTrue();
+    }
 }
