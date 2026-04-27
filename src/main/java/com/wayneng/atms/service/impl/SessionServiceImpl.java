@@ -74,6 +74,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void authenticateSession(String sessionId) {
 
         Session session = getSession(sessionId);

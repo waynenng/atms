@@ -82,7 +82,7 @@ class WithdrawalTest {
         atm.setAtmStatus("ACTIVE");
         atm.setCashAvailable(new BigDecimal("5000"));
         atm.setCurrency("MYR");
-        atm.setPerTransactionLimit(new BigDecimal("1000"));
+        atm.setPerTransactionLimit(new BigDecimal("2000"));
         atm.setBank(bank);
         atmRepository.save(atm);
     }
@@ -144,9 +144,42 @@ class WithdrawalTest {
         assertThat(session.getSessionStatus()).isEqualTo("ENDED");
         assertThat(session.getEndReason()).isEqualTo("FAILED");
         assertThat(session.getEndTime()).isNotNull();
-
         assertThat(session.getFailedPinAttempts()).isEqualTo(1);
-
         assertThat(session.getAuthenticated()).isFalse();
+    }
+
+    // FAILURE - INSUFFICIENT ACCOUNT BALANCE
+    @Test
+    void shouldFailWithdrawal_insufficientBalance() {
+
+        BigDecimal withdrawAmount = new BigDecimal("1100");
+
+        assertThatThrownBy(() ->
+                withdrawalService.withdraw(CARD_NUMBER, PIN, ATM_CODE, withdrawAmount)
+        ).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Insufficient balance");
+
+        Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
+        assertThat(account.getAvailableBalance())
+                .isEqualByComparingTo("1000.00");
+
+        ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
+        assertThat(atm.getCashAvailable())
+                .isEqualByComparingTo("5000");
+
+        assertThat(transactionRepository.findAll()).hasSize(1);
+
+        Transaction tx = transactionRepository.findAll().get(0);
+        assertThat(tx.getTransactionType()).isEqualTo("WITHDRAWAL");
+        assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
+        assertThat(tx.getAmount()).isEqualByComparingTo("1100");
+
+        assertThat(sessionRepository.findAll()).hasSize(1);
+
+        Session session = sessionRepository.findAll().get(0);
+        assertThat(session.getSessionStatus()).isEqualTo("ENDED");
+        assertThat(session.getEndReason()).isEqualTo("FAILED");
+        assertThat(session.getEndTime()).isNotNull();
+        assertThat(session.getAuthenticated()).isTrue();
     }
 }
