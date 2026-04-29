@@ -39,7 +39,7 @@ class AccountServiceImplTest {
 
     // getActiveAccount
     @Test
-    void shouldReturnActiveAccountSuccessfully(){
+    void shouldReturnActiveAccountSuccessfully() {
         when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
                 .thenReturn(Optional.of(account));
 
@@ -51,7 +51,7 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void shouldThrowException_whenAccountNotFoundOrInactive(){
+    void shouldThrowException_whenAccountNotFoundOrInactive() {
         when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
                 .thenReturn(Optional.empty());
 
@@ -74,7 +74,7 @@ class AccountServiceImplTest {
 
     // deposit
     @Test
-    void shouldDepositBalanceSuccessfully() {
+    void shouldDepositSuccessfully() {
         when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
                 .thenReturn(Optional.of(account));
 
@@ -83,5 +83,14 @@ class AccountServiceImplTest {
         assertEquals(account.getAvailableBalance(), new BigDecimal("6000.00"));
         assertEquals(account.getLedgerBalance(), new BigDecimal("6000.00"));
         verify(accountRepository).save(account);
+    }
+
+    @Test
+    void shouldThrowException_whenDepositAmountBelowMinimum() {
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> accountService.deposit("1111122222", new BigDecimal("5.00")));
+
+        assertEquals("Minimum deposit amount is 10", ex.getMessage());
     }
 }
