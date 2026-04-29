@@ -72,5 +72,16 @@ class AccountServiceImplTest {
         assertEquals(new BigDecimal("5000.00"), account.getAvailableBalance());
     }
 
+    // deposit
+    @Test
+    void shouldDepositBalanceSuccessfully() {
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
 
+        accountService.deposit("1111122222", new BigDecimal("1000.00"));
+
+        assertEquals(account.getAvailableBalance(), new BigDecimal("6000.00"));
+        assertEquals(account.getLedgerBalance(), new BigDecimal("6000.00"));
+        verify(accountRepository).save(account);
+    }
 }
