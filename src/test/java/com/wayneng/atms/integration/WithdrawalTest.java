@@ -67,7 +67,7 @@ class WithdrawalTest {
 
         Card card = new Card();
         card.setCardNumber(CARD_NUMBER);
-        card.setCardType("DEBIT");
+        card.setCardType("VISA");
         card.setCardStatus("ACTIVE");
         card.setPinHash(passwordEncoder.encode(PIN));
         card.setExpiryDate(LocalDate.now().plusYears(3));
