@@ -143,4 +143,21 @@ class AccountServiceImplTest {
 
         assertEquals("Minimum balance violated", ex.getMessage());
     }
+
+    @Test
+    void shouldThrowException_whenDailyWithdrawalLimitExceeded() {
+
+        account.setAvailableBalance(new BigDecimal("11000.00"));
+        account.setLedgerBalance(new BigDecimal("11000.00"));
+
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+        when(transactionRepository.sumWithdrawalsToday("1111122222", LocalDateTime.parse("2026-04-30T00:00")))
+                .thenReturn(new BigDecimal("5000.00"));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> accountService.withdraw("1111122222", new BigDecimal("5000.01")));
+
+        assertEquals("Daily withdrawal limit exceeded", ex.getMessage());
+    }
 }
