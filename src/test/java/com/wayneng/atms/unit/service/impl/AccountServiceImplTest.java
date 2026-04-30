@@ -113,4 +113,12 @@ class AccountServiceImplTest {
         assertEquals(new BigDecimal("4000.00"), account.getLedgerBalance());
         verify(accountRepository).save(account);
     }
+
+    @Test
+    void shouldThrowException_whenWithdrawalAmountBelowMinimum(){
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> accountService.withdraw("1111122222", new BigDecimal("9.99")));
+
+        assertEquals("Minimum withdrawal amount is 10", ex.getMessage());
+    }
 }
