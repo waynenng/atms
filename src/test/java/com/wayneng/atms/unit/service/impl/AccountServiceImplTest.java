@@ -121,4 +121,15 @@ class AccountServiceImplTest {
 
         assertEquals("Minimum withdrawal amount is 10", ex.getMessage());
     }
+
+    @Test
+    void shouldThrowException_whenInsufficientBalance() {
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> accountService.withdraw("1111122222", new BigDecimal("6000.00")));
+
+        assertEquals("Insufficient balance", ex.getMessage());
+    }
 }
