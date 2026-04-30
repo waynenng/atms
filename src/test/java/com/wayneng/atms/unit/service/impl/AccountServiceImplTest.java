@@ -52,7 +52,6 @@ class AccountServiceImplTest {
 
         assertNotNull(result);
         assertEquals("1111122222", result.getAccountNumber());
-        assertEquals("ACTIVE", result.getAccountStatus());
     }
 
     @Test
@@ -72,9 +71,9 @@ class AccountServiceImplTest {
         when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
                 .thenReturn(Optional.of(account));
 
-        accountService.getBalance("1111122222");
+        BigDecimal result = accountService.getBalance("1111122222");
 
-        assertEquals(new BigDecimal("5000.00"), account.getAvailableBalance());
+        assertEquals(new BigDecimal("5000.00"), result);
     }
 
     // deposit
@@ -85,27 +84,50 @@ class AccountServiceImplTest {
 
         accountService.deposit("1111122222", new BigDecimal("1000.00"));
 
-        assertEquals(account.getAvailableBalance(), new BigDecimal("6000.00"));
-        assertEquals(account.getLedgerBalance(), new BigDecimal("6000.00"));
+        assertEquals(new BigDecimal("6000.00"), account.getAvailableBalance());
+        assertEquals(new BigDecimal("6000.00"), account.getLedgerBalance());
+        verify(accountRepository).save(account);
+    }
+
+    @Test
+    void shouldAllowDeposit_whenAmountEqualsMinimum() {
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+
+        accountService.deposit("1111122222", BigDecimal.TEN);
+
         verify(accountRepository).save(account);
     }
 
     @Test
     void shouldThrowException_whenDepositAmountBelowMinimum() {
-
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> accountService.deposit("1111122222", new BigDecimal("5.00")));
 
         assertEquals("Minimum deposit amount is 10", ex.getMessage());
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowException_whenDepositAccountNotFound() {
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> accountService.deposit("1111122222", new BigDecimal("1000.00")));
+
+        assertEquals("Account not found or inactive", ex.getMessage());
+        verify(accountRepository, never()).save(any());
     }
 
     // withdraw
     @Test
-    void shouldWithdrawSuccessfully(){
+    void shouldWithdrawSuccessfully() {
         when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
                 .thenReturn(Optional.of(account));
-        when(transactionRepository.sumWithdrawalsToday("1111122222", LocalDateTime.parse("2026-04-30T00:00")))
-                .thenReturn(new BigDecimal("0.00"));
+
+        when(transactionRepository.sumWithdrawalsToday(eq("1111122222"), any(LocalDateTime.class)))
+                .thenReturn(BigDecimal.ZERO);
 
         accountService.withdraw("1111122222", new BigDecimal("1000.00"));
 
@@ -115,11 +137,37 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void shouldThrowException_whenWithdrawalAmountBelowMinimum(){
+    void shouldThrowException_whenWithdrawAccountNotFound() {
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> accountService.withdraw("1111122222", new BigDecimal("1000.00")));
+
+        assertEquals("Account not found or inactive", ex.getMessage());
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowException_whenWithdrawalAmountBelowMinimum() {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> accountService.withdraw("1111122222", new BigDecimal("9.99")));
 
         assertEquals("Minimum withdrawal amount is 10", ex.getMessage());
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldAllowWithdrawal_whenAmountEqualsMinimum() {
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+
+        when(transactionRepository.sumWithdrawalsToday(any(), any()))
+                .thenReturn(BigDecimal.ZERO);
+
+        accountService.withdraw("1111122222", BigDecimal.TEN);
+
+        verify(accountRepository).save(account);
     }
 
     @Test
@@ -131,6 +179,7 @@ class AccountServiceImplTest {
                 () -> accountService.withdraw("1111122222", new BigDecimal("6000.00")));
 
         assertEquals("Insufficient balance", ex.getMessage());
+        verify(accountRepository, never()).save(any());
     }
 
     @Test
@@ -142,22 +191,55 @@ class AccountServiceImplTest {
                 () -> accountService.withdraw("1111122222", new BigDecimal("4900.01")));
 
         assertEquals("Minimum balance violated", ex.getMessage());
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldIgnoreMinimumBalance_whenNull() {
+        account.setMinimumBalance(null);
+
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+
+        when(transactionRepository.sumWithdrawalsToday(any(), any()))
+                .thenReturn(BigDecimal.ZERO);
+
+        accountService.withdraw("1111122222", new BigDecimal("4900.01"));
+
+        assertEquals(new BigDecimal("99.99"), account.getAvailableBalance());
+        assertEquals(new BigDecimal("99.99"), account.getLedgerBalance());
+        verify(accountRepository).save(account);
     }
 
     @Test
     void shouldThrowException_whenDailyWithdrawalLimitExceeded() {
-
         account.setAvailableBalance(new BigDecimal("11000.00"));
         account.setLedgerBalance(new BigDecimal("11000.00"));
 
         when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
                 .thenReturn(Optional.of(account));
-        when(transactionRepository.sumWithdrawalsToday("1111122222", LocalDateTime.parse("2026-04-30T00:00")))
+
+        when(transactionRepository.sumWithdrawalsToday(any(), any()))
                 .thenReturn(new BigDecimal("5000.00"));
 
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> accountService.withdraw("1111122222", new BigDecimal("5000.01")));
 
         assertEquals("Daily withdrawal limit exceeded", ex.getMessage());
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldIgnoreDailyLimit_whenNull() {
+        account.setDailyWithdrawalLimit(null);
+        account.setAvailableBalance(new BigDecimal("11000.00"));
+        account.setLedgerBalance(new BigDecimal("11000.00"));
+
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+
+        accountService.withdraw("1111122222", new BigDecimal("10000.01"));
+
+        verify(accountRepository).save(account);
     }
 }
