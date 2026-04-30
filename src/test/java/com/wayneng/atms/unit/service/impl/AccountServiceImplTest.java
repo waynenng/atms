@@ -2,12 +2,14 @@ package com.wayneng.atms.unit.service.impl;
 
 import com.wayneng.atms.model.Account;
 import com.wayneng.atms.repository.AccountRepository;
+import com.wayneng.atms.repository.TransactionRepository;
 import com.wayneng.atms.service.impl.AccountServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,6 +20,9 @@ class AccountServiceImplTest {
 
     @Mock
     private AccountRepository accountRepository;
+
+    @Mock
+    private TransactionRepository transactionRepository;
 
     @InjectMocks
     private AccountServiceImpl accountService;
@@ -92,5 +97,20 @@ class AccountServiceImplTest {
                 () -> accountService.deposit("1111122222", new BigDecimal("5.00")));
 
         assertEquals("Minimum deposit amount is 10", ex.getMessage());
+    }
+
+    // withdraw
+    @Test
+    void shouldWithdrawSuccessfully(){
+        when(accountRepository.findByAccountNumberAndAccountStatus("1111122222", "ACTIVE"))
+                .thenReturn(Optional.of(account));
+        when(transactionRepository.sumWithdrawalsToday("1111122222", LocalDateTime.parse("2026-04-30T00:00")))
+                .thenReturn(new BigDecimal("0.00"));
+
+        accountService.withdraw("1111122222", new BigDecimal("1000.00"));
+
+        assertEquals(new BigDecimal("4000.00"), account.getAvailableBalance());
+        assertEquals(new BigDecimal("4000.00"), account.getLedgerBalance());
+        verify(accountRepository).save(account);
     }
 }
