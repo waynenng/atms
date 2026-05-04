@@ -2,7 +2,7 @@ package com.wayneng.atms.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wayneng.atms.controller.WithdrawalController;
-import com.wayneng.atms.dto.WithdrawalRequest;
+import com.wayneng.atms.dto.AtmRequest;
 import com.wayneng.atms.service.WithdrawalService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class WithdrawalControllerTest {
     @Test
     void shouldReturn200_whenWithdrawalSuccessful() throws Exception {
 
-        WithdrawalRequest request = new WithdrawalRequest();
+        AtmRequest request = new AtmRequest();
         request.setCardNumber("1234567890123456");
         request.setPin("1234");
         request.setAtmCode("ATM001");
@@ -68,7 +68,7 @@ class WithdrawalControllerTest {
     @Test
     void shouldReturn400_whenInvalidPin() throws Exception {
 
-        WithdrawalRequest request = new WithdrawalRequest();
+        AtmRequest request = new AtmRequest();
         request.setCardNumber("1234567890123456");
         request.setPin("9999");
         request.setAtmCode("ATM001");

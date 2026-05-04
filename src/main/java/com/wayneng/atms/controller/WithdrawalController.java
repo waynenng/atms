@@ -1,6 +1,6 @@
 package com.wayneng.atms.controller;
 
-import com.wayneng.atms.dto.WithdrawalRequest;
+import com.wayneng.atms.dto.AtmRequest;
 import com.wayneng.atms.service.WithdrawalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ public class WithdrawalController {
     private final WithdrawalService withdrawalService;
 
     @PostMapping
-    public ResponseEntity<String> withdraw(@RequestBody WithdrawalRequest request) {
+    public ResponseEntity<String> withdraw(@RequestBody AtmRequest request) {
 
         try {
             withdrawalService.withdraw(

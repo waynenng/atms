@@ -4,7 +4,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class WithdrawalRequest {
+public class AtmRequest {
 
     private String cardNumber;
     private String pin;
