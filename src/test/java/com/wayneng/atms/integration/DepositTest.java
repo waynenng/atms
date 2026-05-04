@@ -111,6 +111,42 @@ public class DepositTest {
         assertThat(session.getAuthenticated()).isTrue();
     }
 
+    // FAILURE - INVALID PIN
+    @Test
+    void shouldFailDeposit_invalidPin() {
+
+        BigDecimal depositAmount = new BigDecimal("200.00");
+
+        assertThatThrownBy(() ->
+                depositService.deposit(CARD_NUMBER, "999999", ATM_CODE, depositAmount)
+        ).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Invalid PIN");
+
+        Account account = accountRepository.findById(ACCOUNT_NUMBER).orElseThrow();
+        assertThat(account.getAvailableBalance())
+                .isEqualByComparingTo("6000.00");
+
+        ATM atm = atmRepository.findById(ATM_CODE).orElseThrow();
+        assertThat(atm.getCashAvailable())
+                .isEqualByComparingTo("3000.00");
+
+        assertThat(transactionRepository.findAll()).hasSize(1);
+
+        Transaction tx = transactionRepository.findAll().get(0);
+        assertThat(tx.getTransactionType()).isEqualTo("DEPOSIT");
+        assertThat(tx.getTransactionStatus()).isEqualTo("FAILED");
+        assertThat(tx.getAmount()).isEqualByComparingTo("200.00");
+
+        assertThat(sessionRepository.findAll()).hasSize(1);
+
+        Session session = sessionRepository.findAll().get(0);
+        assertThat(session.getSessionStatus()).isEqualTo("ENDED");
+        assertThat(session.getEndReason()).isEqualTo("FAILED");
+        assertThat(session.getEndTime()).isNotNull();
+        assertThat(session.getFailedPinAttempts()).isEqualTo(1);
+        assertThat(session.getAuthenticated()).isFalse();
+    }
+
     // FAILURE - MINIMUM DEPOSIT AMOUNT NOT MET
     @Test
     void shouldFailDeposit_belowMinimumDepositAmount() {
