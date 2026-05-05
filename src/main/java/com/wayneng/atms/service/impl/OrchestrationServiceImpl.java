@@ -15,6 +15,7 @@ public class OrchestrationServiceImpl implements OrchestrationService {
     private final CardService cardService;
     private final WithdrawalService withdrawalService;
     private final DepositService depositService;
+    private final BalanceInquiryService balanceInquiryService;
 
     @Override
     public void orchestrate(String operationType,
@@ -45,6 +46,10 @@ public class OrchestrationServiceImpl implements OrchestrationService {
             } else if ("DEPOSIT".equalsIgnoreCase(operationType)) {
 
                 depositService.deposit(session, amount);
+
+            } else if ("BALANCE INQUIRY".equalsIgnoreCase(operationType)) {
+
+                balanceInquiryService.getAvailableBalance(cardNumber);
 
             } else {
 
