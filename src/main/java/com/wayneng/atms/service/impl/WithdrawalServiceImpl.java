@@ -12,42 +12,32 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class WithdrawalServiceImpl implements WithdrawalService {
 
-    private final CardService cardService;
-    private final SessionService sessionService;
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final ATMService atmService;
 
     @Override
     @Transactional
-    public void withdraw(String cardNumber, String pin, String atmCode, BigDecimal amount) {
+    public void withdraw(Session session, BigDecimal amount) {
 
-        boolean success = false;
-        Transaction transaction = null;
-
-        Session session = sessionService.startSession(cardNumber, atmCode);
+        String cardNumber = session.getCard().getCardNumber();
 
         String accountNumber = session.getCard().getAccount().getAccountNumber();
 
-        transaction = transactionService.createTransaction(
-                "WITHDRAWAL",
-                amount,
-                accountNumber,
-                cardNumber,
-                session.getSessionId(),
-                atmCode
-        );
+        String atmCode = session.getAtm().getAtmCode();
+
+        Transaction transaction = null;
 
         try {
 
-            boolean validPin = cardService.validatePin(cardNumber, pin);
-
-            if (!validPin) {
-                sessionService.recordFailedPin(session.getSessionId());
-                throw new RuntimeException("Invalid PIN");
-            }
-
-            sessionService.authenticateSession(session.getSessionId());
+            transaction = transactionService.createTransaction(
+                    "WITHDRAWAL",
+                    amount,
+                    accountNumber,
+                    cardNumber,
+                    session.getSessionId(),
+                    atmCode
+            );
 
             accountService.withdraw(accountNumber, amount);
 
@@ -57,8 +47,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
                     transaction.getTransactionId(),
                     "SUCCESS"
             );
-
-            success = true;
 
         } catch (Exception e) {
 
@@ -70,13 +58,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
             }
 
             throw e;
-
-        } finally {
-
-            sessionService.endSession(
-                    session.getSessionId(),
-                    success ? "COMPLETED" : "FAILED"
-            );
         }
     }
 }

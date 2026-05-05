@@ -10,44 +10,34 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-public class DepositServiceImpl implements DepositService{
+public class DepositServiceImpl implements DepositService {
 
-    private final CardService cardService;
-    private final SessionService sessionService;
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final ATMService atmService;
 
     @Override
     @Transactional
-    public void deposit(String cardNumber, String pin, String atmCode, BigDecimal amount) {
+    public void deposit(Session session, BigDecimal amount) {
 
-        boolean success = false;
-        Transaction transaction = null;
-
-        Session session = sessionService.startSession(cardNumber, atmCode);
+        String cardNumber = session.getCard().getCardNumber();
 
         String accountNumber = session.getCard().getAccount().getAccountNumber();
 
-        transaction = transactionService.createTransaction(
-                "DEPOSIT",
-                amount,
-                accountNumber,
-                cardNumber,
-                session.getSessionId(),
-                atmCode
-        );
+        String atmCode = session.getAtm().getAtmCode();
+
+        Transaction transaction = null;
 
         try {
 
-            boolean validPin = cardService.validatePin(cardNumber, pin);
-
-            if (!validPin) {
-                sessionService.recordFailedPin(session.getSessionId());
-                throw new RuntimeException("Invalid PIN");
-            }
-
-            sessionService.authenticateSession(session.getSessionId());
+            transaction = transactionService.createTransaction(
+                    "DEPOSIT",
+                    amount,
+                    accountNumber,
+                    cardNumber,
+                    session.getSessionId(),
+                    atmCode
+            );
 
             accountService.deposit(accountNumber, amount);
 
@@ -57,8 +47,6 @@ public class DepositServiceImpl implements DepositService{
                     transaction.getTransactionId(),
                     "SUCCESS"
             );
-
-            success = true;
 
         } catch (Exception e) {
 
@@ -70,13 +58,6 @@ public class DepositServiceImpl implements DepositService{
             }
 
             throw e;
-
-        } finally {
-
-            sessionService.endSession(
-                    session.getSessionId(),
-                    success ? "COMPLETED" : "FAILED"
-            );
         }
     }
 }
