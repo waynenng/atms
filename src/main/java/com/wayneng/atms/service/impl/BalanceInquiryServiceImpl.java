@@ -1,8 +1,8 @@
 package com.wayneng.atms.service.impl;
 
-import com.wayneng.atms.model.Account;
-import com.wayneng.atms.repository.AccountRepository;
+import com.wayneng.atms.model.Session;
 import com.wayneng.atms.service.BalanceInquiryService;
+import com.wayneng.atms.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,15 +12,16 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class BalanceInquiryServiceImpl implements BalanceInquiryService {
 
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Override
     @Transactional(readOnly = true)
-    public BigDecimal getAvailableBalance(String cardNumber) {
+    public BigDecimal inquire(Session session) {
 
-        Account account = accountRepository.findByCards_CardNumber(cardNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found for card: " + cardNumber));
+        String accountNumber = session.getCard()
+                .getAccount()
+                .getAccountNumber();
 
-        return account.getAvailableBalance();
+        return accountService.getBalance(accountNumber);
     }
 }
