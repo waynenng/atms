@@ -1,1 +1,15 @@
-<p>insert-card works!</p>
+<div class="container">
+  <h1>Insert Your Card</h1>
+
+  <div class="card-input-wrapper">
+    <input
+      type="text"
+      maxlength="16"
+      [(ngModel)]="cardNumber"
+      (input)="onInputChange()"
+      placeholder="Enter 16-digit card number"
+    />
+  </div>
+
+  <button (click)="submit()">Continue</button>
+</div>

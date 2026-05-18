@@ -1,0 +1,15 @@
+.card-input-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.card-input-wrapper input {
+  font-size: 24px;
+  text-align: center;
+  width: 400px;
+  padding: 10px;
+  letter-spacing: 14px;
+  background-image: linear-gradient(to right, #ccc 1px, transparent 1px);
+  background-size: 25px 100%;
+  border: 2px solid #333;
+}
